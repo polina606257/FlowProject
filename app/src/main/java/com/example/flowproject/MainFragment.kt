@@ -29,7 +29,7 @@ class MainFragment : Fragment() {
         viewModel.getIsNetworkAvailable()
         lifecycleScope.launchWhenStarted {
             viewModel.isInternetAvailable.collect { networkState ->
-                when(networkState) {
+                when(networkState.isConnected) {
                     true -> networkStateTextView.text = "There is internet"
                     else -> networkStateTextView.text = "There is no internet"
                 }

@@ -11,13 +11,13 @@ class MainViewModel(
     private val networkStateRepository: NetworkStateRepository,
     private val context: Context
 ) : ViewModel() {
-    private val _isInternetAvailable = MutableStateFlow(false)
+    private val _isInternetAvailable = MutableStateFlow(NetworkState(false))
     val isInternetAvailable = _isInternetAvailable.asStateFlow()
 
     fun getIsNetworkAvailable() {
         viewModelScope.launch {
             networkStateRepository.isInternetAvailable(context).collect { isInternetConnected ->
-                _isInternetAvailable.value = isInternetConnected
+                _isInternetAvailable.value = NetworkState(isInternetConnected)
             }
         }
     }
