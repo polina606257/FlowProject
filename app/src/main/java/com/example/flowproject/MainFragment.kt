@@ -5,13 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.launch
 
 class MainFragment : Fragment() {
 
     lateinit var networkStateTextView: TextView
+    lateinit var clickBtn: Button
     private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
@@ -24,15 +27,25 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val networkStateRepository = NetworkStateRepository()
-        viewModel = ViewModelProvider(this, MainViewModelFactory(networkStateRepository, requireContext().applicationContext))[MainViewModel::class.java]
+        viewModel =
+            ViewModelProvider(this, MainViewModelFactory(networkStateRepository, requireContext().applicationContext))[MainViewModel::class.java]
+
         networkStateTextView = view.findViewById(R.id.internetConnectionTextView)
+        clickBtn = view.findViewById(R.id.click_btn)
+
         viewModel.getIsNetworkAvailable()
         lifecycleScope.launchWhenStarted {
             viewModel.isInternetAvailable.collect { networkState ->
-                when(networkState.isConnected) {
+                when (networkState.isConnected) {
                     true -> networkStateTextView.text = "There is internet"
                     else -> networkStateTextView.text = "There is no internet"
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            clickBtn.clicksFlow().collect {
+                clickBtn.text = "It is been clicked"
             }
         }
     }
