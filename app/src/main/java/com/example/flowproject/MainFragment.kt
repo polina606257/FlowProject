@@ -33,7 +33,6 @@ class MainFragment : Fragment() {
         networkStateTextView = view.findViewById(R.id.internetConnectionTextView)
         clickBtn = view.findViewById(R.id.click_btn)
 
-        viewModel.getIsNetworkAvailable()
         lifecycleScope.launchWhenStarted {
             viewModel.isInternetAvailable.collect { networkState ->
                 when (networkState.isConnected) {

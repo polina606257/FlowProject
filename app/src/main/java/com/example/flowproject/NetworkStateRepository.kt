@@ -5,13 +5,16 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOf
 
 class NetworkStateRepository {
-    private val isInternetConnected = MutableStateFlow(false)
 
-    fun isInternetAvailable(context: Context): StateFlow<Boolean>  {
+    fun isInternetAvailable(context: Context): Flow<NetworkState> = callbackFlow {
 
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkRequest = NetworkRequest.Builder()
@@ -20,14 +23,16 @@ class NetworkStateRepository {
 
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                isInternetConnected.value = true
+                trySend(NetworkState(true))
             }
 
             override fun onLost(network: Network) {
-                isInternetConnected.value = false
+                trySend(NetworkState(false))
             }
         }
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
-        return isInternetConnected
+        awaitClose {
+            connectivityManager.unregisterNetworkCallback(networkCallback)
+        }
     }
 }
