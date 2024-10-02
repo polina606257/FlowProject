@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.callbackFlow
 fun View.clicksFlow(): Flow<Unit> = callbackFlow {
     val listener = object : OnClickListener {
         override fun onClick(p0: View?) {
-            trySend(Unit).isSuccess
+            trySend(Unit)
         }
     }
     this@clicksFlow.setOnClickListener(listener)
