@@ -6,14 +6,26 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    networkStateRepository: NetworkStateRepository,
+    private val networkStateRepository: NetworkStateRepository,
     private val context: Context
 ) : ViewModel() {
-    val isInternetAvailable = networkStateRepository.isInternetAvailable(context).shareIn(viewModelScope, SharingStarted.Lazily)
+
+    private val _isInternetConnected = MutableStateFlow(false)
+    val isInternetConnected = _isInternetConnected
+
+    init {
+        viewModelScope.launch {
+            _isInternetConnected.value = getInternetState().value.isConnected
+        }
+    }
+
+    private suspend fun getInternetState() : StateFlow<NetworkState> {
+        return networkStateRepository.isInternetAvailable(context).stateIn(viewModelScope)
+    }
 }
