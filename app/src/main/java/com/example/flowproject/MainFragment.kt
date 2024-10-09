@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 
 class MainFragment : Fragment() {
@@ -33,11 +35,13 @@ class MainFragment : Fragment() {
         networkStateTextView = view.findViewById(R.id.internetConnectionTextView)
         clickBtn = view.findViewById(R.id.click_btn)
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.isInternetConnected.collect {networkState ->
-                when(networkState) {
-                    true -> networkStateTextView.text = getString(R.string.has_internet_connection)
-                    else -> networkStateTextView.text = getString(R.string.no_internet_connection)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.isInternetConnected.collect { networkState ->
+                    when (networkState) {
+                        true -> networkStateTextView.text = getString(R.string.has_internet_connection)
+                        else -> networkStateTextView.text = getString(R.string.no_internet_connection)
+                    }
                 }
             }
         }
