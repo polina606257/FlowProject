@@ -3,6 +3,7 @@ package com.example.flowproject
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,11 +22,13 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            _isInternetConnected.value = getInternetState().value.isConnected
+            getInternetState().collect { networkState ->
+                _isInternetConnected.value = networkState.isConnected
+            }
         }
     }
 
-    private suspend fun getInternetState() : StateFlow<NetworkState> {
-        return networkStateRepository.isInternetAvailable(context).stateIn(viewModelScope)
+    private fun getInternetState() : Flow<NetworkState> {
+        return networkStateRepository.isInternetAvailable(context)
     }
 }
