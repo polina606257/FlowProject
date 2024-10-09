@@ -3,6 +3,7 @@ package com.example.flowproject
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,13 +23,9 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            getInternetState().collect { networkState ->
+            networkStateRepository.isInternetAvailable(context, viewModelScope).collect { networkState ->
                 _isInternetConnected.value = NetworkState(networkState.isConnected)
             }
         }
-    }
-
-    private fun getInternetState() : Flow<NetworkState> {
-        return networkStateRepository.isInternetAvailable(context)
     }
 }
