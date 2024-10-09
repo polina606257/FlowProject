@@ -8,9 +8,7 @@ import android.net.NetworkRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.shareIn
 
 class NetworkStateRepository {
 
@@ -34,5 +32,5 @@ class NetworkStateRepository {
         awaitClose {
             connectivityManager.unregisterNetworkCallback(networkCallback)
         }
-    }.shareIn(coroutineScope, replay = 1, started = SharingStarted.WhileSubscribed())
+    }
 }
