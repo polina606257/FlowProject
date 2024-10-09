@@ -3,6 +3,7 @@ package com.example.flowproject
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.CoroutineScope
 
 class MainViewModelFactory(
     private val networkStateRepository: NetworkStateRepository,
