@@ -17,13 +17,13 @@ class MainViewModel(
     private val context: Context
 ) : ViewModel() {
 
-    private val _isInternetConnected = MutableStateFlow(false)
+    private val _isInternetConnected = MutableStateFlow(NetworkState(false))
     val isInternetConnected = _isInternetConnected
 
     init {
         viewModelScope.launch {
             getInternetState().collect { networkState ->
-                _isInternetConnected.value = networkState.isConnected
+                _isInternetConnected.value = NetworkState(networkState.isConnected)
             }
         }
     }

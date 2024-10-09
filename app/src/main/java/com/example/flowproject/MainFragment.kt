@@ -38,7 +38,7 @@ class MainFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isInternetConnected.collect { networkState ->
-                    when (networkState) {
+                    when (networkState.isConnected) {
                         true -> networkStateTextView.text = getString(R.string.has_internet_connection)
                         else -> networkStateTextView.text = getString(R.string.no_internet_connection)
                     }
